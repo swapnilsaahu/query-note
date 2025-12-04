@@ -6,7 +6,8 @@
         "moduleResolution": "node",
         "sourceMap": true,
         "outDir": "dist",
-        "strict": true
+        "strict": true,
+        "allowImportingTsExtensions": true
     },
     "lib": [
         "es2015"
