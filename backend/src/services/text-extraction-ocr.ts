@@ -12,9 +12,9 @@ const responseSchema: resposeType = {
     "extractedText": "string",
     "relatedTags": "string"
 }
-export async function textExtractionOcr() {
+export async function textExtractionOcr(filePath: string) {
     const ai = new GoogleGenAI({});
-    const base64ImageFile = fs.readFileSync("../../assets/20251117_163718.jpg", {
+    const base64ImageFile = fs.readFileSync(filePath, {
         encoding: "base64",
     });
     const result = await ai.models.generateContent({
@@ -79,9 +79,9 @@ export const chunkingText = async (documents: DocumentInterface[]) => {
         console.error("error while chunking")
     }
 }
-const main = async () => {
+export const main = async (filePath: string) => {
     try {
-        const result = await textExtractionOcr();
+        const result = await textExtractionOcr(filePath);
         const doc = documentConversionText(result);
         if (!doc) throw new Error
         const chunks = await chunkingText(doc);
@@ -101,4 +101,3 @@ const main = async () => {
         console.error("error while executing main")
     }
 }
-main();

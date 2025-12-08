@@ -3,6 +3,8 @@ import { createUser, findByEmail, insertRefreshToken } from "../db/users-reposit
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
+import { v2 as cloudinary } from 'cloudinary';
+import { main } from "../services/text-extraction-ocr";
 
 export interface userType {
     username: string,
@@ -115,4 +117,30 @@ export const loginUser = async (req: Request, res: Response) => {
         res.status(500);
     }
 
+}
+
+export const uploadNote = async (req: Request, res: Response) => {
+    try {
+        if (!req.file) {
+            throw new Error("file not found");
+        };
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET
+        })
+        const result = await cloudinary.uploader.upload(req.file?.path);
+        console.log(result);
+        const extract = await main(req.file.path);
+        return res.status(201).json({
+            success: true,
+            msg: "image uploaded successfully"
+        })
+    } catch (error) {
+        console.error("error while uploading");
+        return res.status(500).json({
+            success: false,
+            msg: "upload failed"
+        })
+    }
 }
