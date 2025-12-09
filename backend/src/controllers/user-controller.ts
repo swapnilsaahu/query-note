@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
-import { createUser, findByEmail, insertRefreshToken } from "../db/users-repository";
+import { createUser, findByEmail, insertEmbAndContent, insertRefreshToken } from "../db/users-repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 import { v2 as cloudinary } from 'cloudinary';
 import { main } from "../services/text-extraction-ocr";
+import { unlink } from "fs/promises";
 
 export interface userType {
     username: string,
@@ -132,15 +133,51 @@ export const uploadNote = async (req: Request, res: Response) => {
         const result = await cloudinary.uploader.upload(req.file?.path);
         console.log(result);
         const extract = await main(req.file.path);
+        if (!extract) {
+            throw new Error("error while extraction and emb")
+        }
+        console.log("just the embeddings \n", extract[0].embeddings)
+        console.log("\n", extract[1])
+        const content = JSON.parse(extract[1])
+
+        console.log(typeof content);
+        console.log(typeof content[0]);
+
+        const embeddingsFromPythonService = extract[0].embeddings[0];
+        const extracedTextFromImg = content[0].pageContent;
+        const tagsForImg = content[0].metaData.tags
+        console.log("just the pageContent \n", content[0].pageContent)
+        console.log(typeof extracedTextFromImg)
+        console.log(typeof tagsForImg)
+        console.log(typeof embeddingsFromPythonService)
+        console.log(Array.isArray(extract[0].embeddings));      // true
+        console.log(Array.isArray(extract[0].embeddings[0]));   // true
+        console.log(typeof extract[0].embeddings);              // object (normal for arrays)
+        console.log(extract[0].embeddings[0].length);
+        const insertEmbToDb = await insertEmbAndContent(embeddingsFromPythonService, extracedTextFromImg, tagsForImg);
+        if (insertEmbToDb) {
+            await unlink(req.file.path);
+            console.log("file deleted from server");
+        }
+
         return res.status(201).json({
             success: true,
             msg: "image uploaded successfully"
         })
+
     } catch (error) {
         console.error("error while uploading");
         return res.status(500).json({
             success: false,
             msg: "upload failed"
         })
+    }
+}
+
+export const serachQuery = async () => {
+    try {
+
+    } catch (error) {
+        console.error("error while getting the semantic result");
     }
 }

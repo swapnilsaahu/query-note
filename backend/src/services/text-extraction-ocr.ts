@@ -45,11 +45,10 @@ export async function textExtractionOcr(filePath: string) {
 export const documentConversionText = (llmResponse: resposeType) => {
     try {
         const { extractedText, relatedTags } = llmResponse;
-        const arrayOfReleatedTags = relatedTags.split(",");
         const documents = [
             new Document({
                 pageContent: extractedText,
-                metadata: { tags: arrayOfReleatedTags },
+                metadata: { tags: relatedTags },
             }),
         ];
 
@@ -97,6 +96,7 @@ export const main = async (filePath: string) => {
             }
         );
         console.log("final vector embeddings", res.data);
+        return [res.data, chunks];
     } catch (error) {
         console.error("error while executing main")
     }
