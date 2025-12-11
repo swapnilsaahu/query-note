@@ -4,11 +4,11 @@ import { Document, DocumentInterface } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import axios from "axios";
 
-interface resposeType {
+export interface responseType {
     extractedText: string;
     relatedTags: string;
 }
-const responseSchema: resposeType = {
+const responseSchema: responseType = {
     "extractedText": "string",
     "relatedTags": "string"
 }
@@ -42,13 +42,13 @@ export async function textExtractionOcr(filePath: string) {
     return modifedResult;
 }
 
-export const documentConversionText = (llmResponse: resposeType) => {
+export const documentConversionText = (llmResponse: responseType) => {
     try {
         const { extractedText, relatedTags } = llmResponse;
         const documents = [
             new Document({
                 pageContent: extractedText,
-                metadata: { tags: relatedTags },
+                metadata: { tags: relatedTags || "" },
             }),
         ];
 
@@ -78,6 +78,26 @@ export const chunkingText = async (documents: DocumentInterface[]) => {
         console.error("error while chunking")
     }
 }
+
+export const textToVecEmb = async (chunks?: any, text?: string) => {
+    try {
+        const typeOfEmb = (chunks && chunks.trim().length > 0) ? "search_document" : "search_query";
+        const url = `http://localhost:8000/embed/${typeOfEmb}`;
+        const res = await axios.post(
+            url,
+            chunks || text,    //send array directly or query
+            {
+                headers: { "Content-Type": "application/json" }
+            }
+        );
+        console.log("final vector embeddings", res.data);
+        return res.data;
+
+    } catch (err) {
+        console.error("error while getting vectors")
+    }
+
+}
 export const main = async (filePath: string) => {
     try {
         const result = await textExtractionOcr(filePath);
@@ -86,17 +106,8 @@ export const main = async (filePath: string) => {
         const chunks = await chunkingText(doc);
         console.log("following are the chunks", chunks);
 
-
-        const url = "http://localhost:8000/embed/search_query";
-        const res = await axios.post(
-            "http://localhost:8000/embed/search_query",
-            chunks,    // <-- send array directly
-            {
-                headers: { "Content-Type": "application/json" }
-            }
-        );
-        console.log("final vector embeddings", res.data);
-        return [res.data, chunks];
+        const res = await textToVecEmb(chunks, undefined);
+        return [res, chunks];
     } catch (error) {
         console.error("error while executing main")
     }

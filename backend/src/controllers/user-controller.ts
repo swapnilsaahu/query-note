@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
-import { createUser, findByEmail, insertEmbAndContent, insertRefreshToken } from "../db/users-repository";
+import { createUser, findByEmail, insertEmbAndContent, insertRefreshToken, semanticSearch } from "../db/users-repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 import { v2 as cloudinary } from 'cloudinary';
-import { main } from "../services/text-extraction-ocr";
+import { chunkingText, documentConversionText, main, responseType, textToVecEmb } from "../services/text-extraction-ocr";
 import { unlink } from "fs/promises";
+import { createAgent, SystemMessage } from "langchain";
+import { initChatModel } from "langchain";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { GoogleGenAI } from "@google/genai";
+
+
 
 export interface userType {
     username: string,
@@ -176,8 +182,77 @@ export const uploadNote = async (req: Request, res: Response) => {
 
 export const serachQuery = async () => {
     try {
-
+        const userQuery = "what is process?";
+        const userQueryObj: responseType = {
+            extractedText: userQuery,
+            relatedTags: ""
+        };
+        const docQuery = documentConversionText(userQueryObj);
+        if (!docQuery) throw new Error("error while conv query to doc")
+        const chunkedQuery = await chunkingText(docQuery);
+        const resVec = await textToVecEmb(undefined, chunkedQuery);
+        const queryVec = resVec.embeddings[0];
+        const topResult = await semanticSearch(queryVec);
+        console.log(topResult);
+        return [topResult.contents, userQuery];
     } catch (error) {
         console.error("error while getting the semantic result");
     }
 }
+//serachQuery();
+//
+export const chatBot = async () => {
+    try {
+        const ai = new GoogleGenAI({});
+        const context = await serachQuery();
+        if (!context) return null;
+        const chat = ai.chats.create({
+            model: "gemini-2.5-flash",
+            history: [
+                {
+                    role: "user",
+                    parts: [{ text: "hello" }],
+                },
+                {
+                    role: "model",
+                    parts: [{ text: "Great to meet you. What would you like to know?" }],
+                },
+            ],
+            config: {
+                systemInstruction: `You are an expert assistant specialized in answering questions strictly based on OCR-extracted documents.
+Instructions:
+- Use ONLY the provided context to answer the user’s question.
+- If the answer exists in the context, paraphrase it clearly and accurately.
+- Be resilient to OCR errors such as broken words, incorrect spacing, missing characters, or misspellings.
+- Do not use world knowledge unless explicitly permitted.
+Here is the Context ${context[0]}
+
+Response Format:
+Repeat The Query
+Answer:
+<your answer>
+`
+            }
+        });
+
+        const stream1 = await chat.sendMessageStream({
+            message: `${context[1]}`,
+        });
+        for await (const chunk of stream1) {
+            console.log(chunk.text);
+            console.log("_".repeat(80));
+        }
+
+        const stream2 = await chat.sendMessageStream({
+            message: "what is context switching?",
+        });
+        for await (const chunk of stream2) {
+            console.log(chunk.text);
+            console.log("_".repeat(80));
+        }
+    } catch (err) {
+        console.error(err, "error with chatbot")
+    }
+}
+
+chatBot();

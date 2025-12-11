@@ -61,8 +61,8 @@ export const insertRefreshToken = async (dataObj: refreshTokenType) => {
 
 export const insertEmbAndContent = async (emb: any, contents: string, tags: string) => {
     try {
-        const user_id = ""
-        const img_link = "http//lintoimage"
+        const user_id = "3c3ecd11-82a3-4577-8aa0-ee5fe513353f";
+        const img_link = "http//lintoimagedshfsdhfuphdfpuahsfusah"
         const vector = toSql(emb); //important convert to pgvector format {1,2,3,4} to [1,2,3,4] pgvector doesnt accept curly brackets
         const query = {
             text: 'INSERT INTO notes (vec_emb,contents,tags,user_id,img_link) VALUES ($1,$2,$3,$4,$5)',
@@ -77,5 +77,26 @@ export const insertEmbAndContent = async (emb: any, contents: string, tags: stri
     } catch (err) {
         console.error("error while inserting vectors to db", err);
         return false;
+    }
+}
+
+export const semanticSearch = async (emb: any) => {
+    try {
+        const vector = toSql(emb);
+        const query = {
+            text: 'SELECT * FROM notes ORDER BY vec_emb <=> $1 LIMIT 5',
+            values: [vector]
+        }
+        const result = await pool.query(query);
+        if (result.rows.length === 0) {
+            console.log("no emb found")
+        } else {
+            console.log("found note:", result.rows[0])
+            return result.rows[0];
+        }
+
+    } catch (err) {
+        console.error(err)
+        return false
     }
 }
