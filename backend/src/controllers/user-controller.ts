@@ -3,14 +3,10 @@ import { createUser, findByEmail, insertEmbAndContent, insertRefreshToken, seman
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
-import { v2 as cloudinary } from 'cloudinary';
-import { chunkingText, documentConversionText, main, responseType, textToVecEmb } from "../services/text-extraction-ocr";
+import { pipeLineFromOcrToEmb } from "../services/text-extraction-ocr";
 import { unlink } from "fs/promises";
-import { createAgent, SystemMessage } from "langchain";
-import { initChatModel } from "langchain";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { GoogleGenAI } from "@google/genai";
-
+import { uploadService } from "../services/upload-service";
+import { UploadApiResponse } from "cloudinary";
 
 
 export interface userType {
@@ -24,6 +20,13 @@ export interface refreshTokenType {
     deviceInfo: string,
     ipAddr: string,
     userId: string
+}
+export interface insertVectorObjType {
+    emb: Array<number>,
+    contents: string,
+    tags: string,
+    img_link: string,
+    user_id: string
 }
 const JWT_SECRET = "asdjhfouashtp0wehp9uohpodfhjsdhfuoas";
 
@@ -131,36 +134,41 @@ export const uploadNote = async (req: Request, res: Response) => {
         if (!req.file) {
             throw new Error("file not found");
         };
-        cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-            api_key: process.env.CLOUDINARY_API_KEY,
-            api_secret: process.env.CLOUDINARY_API_SECRET
-        })
-        const result = await cloudinary.uploader.upload(req.file?.path);
-        console.log(result);
-        const extract = await main(req.file.path);
-        if (!extract) {
+
+        const uploadFile: UploadApiResponse | false = await uploadService(req.file?.path); //img cloud upload
+        if (!uploadFile) throw new Error;
+
+        const extractedTextAndEmb = await pipeLineFromOcrToEmb(req.file.path); //ocr to emb
+        if (!extractedTextAndEmb) {
             throw new Error("error while extraction and emb")
         }
-        console.log("just the embeddings \n", extract[0].embeddings)
-        console.log("\n", extract[1])
-        const content = JSON.parse(extract[1])
+        console.log("just the embeddings \n", extractedTextAndEmb[0].embeddings)
+        console.log("\n", extractedTextAndEmb[1])
+        const content = JSON.parse(extractedTextAndEmb[1])
 
-        console.log(typeof content);
-        console.log(typeof content[0]);
+        // console.log(typeof content);
+        // console.log(typeof content[0]);
 
-        const embeddingsFromPythonService = extract[0].embeddings[0];
+        const embeddingsFromPythonService = extractedTextAndEmb[0].embeddings[0];
         const extracedTextFromImg = content[0].pageContent;
         const tagsForImg = content[0].metaData.tags
         console.log("just the pageContent \n", content[0].pageContent)
-        console.log(typeof extracedTextFromImg)
-        console.log(typeof tagsForImg)
-        console.log(typeof embeddingsFromPythonService)
-        console.log(Array.isArray(extract[0].embeddings));      // true
-        console.log(Array.isArray(extract[0].embeddings[0]));   // true
-        console.log(typeof extract[0].embeddings);              // object (normal for arrays)
-        console.log(extract[0].embeddings[0].length);
-        const insertEmbToDb = await insertEmbAndContent(embeddingsFromPythonService, extracedTextFromImg, tagsForImg);
+        const insertObjForDB: insertVectorObjType = {
+            emb: extractedTextAndEmb[0].embeddings[0],
+            contents: content[0].pageContent,
+            tags: content[0].metaData.tags,
+            img_link: uploadFile.url,
+            //add user id
+        }
+        // console.log(typeof extracedTextFromImg)
+        // console.log(typeof tagsForImg)
+        // console.log(typeof embeddingsFromPythonService)
+        // console.log(Array.isArray(extract[0].embeddings));      // true
+        // console.log(Array.isArray(extract[0].embeddings[0]));   // true
+        // console.log(typeof extract[0].embeddings);              // object (normal for arrays)
+        // console.log(extract[0].embeddings[0].length);
+
+        const insertEmbToDb = await insertEmbAndContent(insertObjForDB);
         if (insertEmbToDb) {
             await unlink(req.file.path);
             console.log("file deleted from server");
@@ -180,79 +188,3 @@ export const uploadNote = async (req: Request, res: Response) => {
     }
 }
 
-export const serachQuery = async () => {
-    try {
-        const userQuery = "what is process?";
-        const userQueryObj: responseType = {
-            extractedText: userQuery,
-            relatedTags: ""
-        };
-        const docQuery = documentConversionText(userQueryObj);
-        if (!docQuery) throw new Error("error while conv query to doc")
-        const chunkedQuery = await chunkingText(docQuery);
-        const resVec = await textToVecEmb(undefined, chunkedQuery);
-        const queryVec = resVec.embeddings[0];
-        const topResult = await semanticSearch(queryVec);
-        console.log(topResult);
-        return [topResult.contents, userQuery];
-    } catch (error) {
-        console.error("error while getting the semantic result");
-    }
-}
-//serachQuery();
-//
-export const chatBot = async () => {
-    try {
-        const ai = new GoogleGenAI({});
-        const context = await serachQuery();
-        if (!context) return null;
-        const chat = ai.chats.create({
-            model: "gemini-2.5-flash",
-            history: [
-                {
-                    role: "user",
-                    parts: [{ text: "hello" }],
-                },
-                {
-                    role: "model",
-                    parts: [{ text: "Great to meet you. What would you like to know?" }],
-                },
-            ],
-            config: {
-                systemInstruction: `You are an expert assistant specialized in answering questions strictly based on OCR-extracted documents.
-Instructions:
-- Use ONLY the provided context to answer the user’s question.
-- If the answer exists in the context, paraphrase it clearly and accurately.
-- Be resilient to OCR errors such as broken words, incorrect spacing, missing characters, or misspellings.
-- Do not use world knowledge unless explicitly permitted.
-Here is the Context ${context[0]}
-
-Response Format:
-Repeat The Query
-Answer:
-<your answer>
-`
-            }
-        });
-
-        const stream1 = await chat.sendMessageStream({
-            message: `${context[1]}`,
-        });
-        for await (const chunk of stream1) {
-            console.log(chunk.text);
-            console.log("_".repeat(80));
-        }
-
-        const stream2 = await chat.sendMessageStream({
-            message: "what is context switching?",
-        });
-        for await (const chunk of stream2) {
-            console.log(chunk.text);
-            console.log("_".repeat(80));
-        }
-    } catch (err) {
-        console.error(err, "error with chatbot")
-    }
-}
-
-chatBot();

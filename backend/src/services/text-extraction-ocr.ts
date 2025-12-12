@@ -71,17 +71,16 @@ export const chunkingText = async (documents: DocumentInterface[]) => {
             pageContent: doc.pageContent,
             metaData: doc.metadata
         })))
-
-        return jsonResponse;
+        return jsonResponse;  //json as a string, reason to send it python embedding service
 
     } catch (error) {
         console.error("error while chunking")
     }
 }
 
-export const textToVecEmb = async (chunks?: any, text?: string) => {
+export const documentTextToVec = async (chunks?: any, text?: string) => {
     try {
-        const typeOfEmb = (chunks && chunks.trim().length > 0) ? "search_document" : "search_query";
+        const typeOfEmb = (chunks && chunks.trim().length > 0) ? "search_document" : "search_query"; //type of query need as nomic emb models expects it
         const url = `http://localhost:8000/embed/${typeOfEmb}`;
         const res = await axios.post(
             url,
@@ -98,7 +97,7 @@ export const textToVecEmb = async (chunks?: any, text?: string) => {
     }
 
 }
-export const main = async (filePath: string) => {
+export const pipeLineFromOcrToEmb = async (filePath: string) => {
     try {
         const result = await textExtractionOcr(filePath);
         const doc = documentConversionText(result);
@@ -106,7 +105,7 @@ export const main = async (filePath: string) => {
         const chunks = await chunkingText(doc);
         console.log("following are the chunks", chunks);
 
-        const res = await textToVecEmb(chunks, undefined);
+        const res = await documentTextToVec(chunks, undefined);
         return [res, chunks];
     } catch (error) {
         console.error("error while executing main")

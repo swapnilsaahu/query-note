@@ -1,4 +1,4 @@
-import { refreshTokenType, userType } from "../controllers/user-controller.ts";
+import { insertVectorObjType, refreshTokenType, userType } from "../controllers/user-controller.ts";
 import { pool } from "./db.ts";
 import { toSql } from "pgvector";
 export const findByEmail = async (email: string) => {
@@ -59,10 +59,9 @@ export const insertRefreshToken = async (dataObj: refreshTokenType) => {
     }
 }
 
-export const insertEmbAndContent = async (emb: any, contents: string, tags: string) => {
+export const insertEmbAndContent = async (vecObj: insertVectorObjType) => {
     try {
-        const user_id = "3c3ecd11-82a3-4577-8aa0-ee5fe513353f";
-        const img_link = "http//lintoimagedshfsdhfuphdfpuahsfusah"
+        const { emb, img_link, contents, user_id, tags } = vecObj;
         const vector = toSql(emb); //important convert to pgvector format {1,2,3,4} to [1,2,3,4] pgvector doesnt accept curly brackets
         const query = {
             text: 'INSERT INTO notes (vec_emb,contents,tags,user_id,img_link) VALUES ($1,$2,$3,$4,$5)',

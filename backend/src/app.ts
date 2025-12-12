@@ -10,6 +10,9 @@ app.use(express.json());
 import usersRouter from "./routes/users-router.ts"
 app.use("/api/v1/users", usersRouter);
 
+import llmRouter from "./routes/llm-router.ts"
+app.use("/api/v1/llm", llmRouter);
+
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });

@@ -6,6 +6,6 @@ const router = Router();
 
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
-router.route("/uploadNote").post(upload.single('image'), uploadNote);
+router.route("/uploadNote").post(upload.array('image', 4), uploadNote);
 
 export default router;
