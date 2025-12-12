@@ -28,7 +28,7 @@ export interface insertVectorObjType {
     img_link: string,
     user_id: string
 }
-const JWT_SECRET = "asdjhfouashtp0wehp9uohpodfhjsdhfuoas";
+export const JWT_SECRET = "asdjhfouashtp0wehp9uohpodfhjsdhfuoas";
 
 const generateTokens = (userID: string): { accessToken: string, refreshToken: string } => {
     const jwt_id = uuidv4();
