@@ -40,21 +40,21 @@ export const createUser = async (dataObj: userType) => {
     }
 }
 
-export const insertRefreshToken = async (dataObj: refreshTokenType) => {
+export const insertRefreshToken = async (jwtId: string, userId: string) => {
     try {
         const query = {
-            text: 'INSERT INTO refresh_tokens (token,user_id,device_info) VALUES ($1,$2,$3) RETURNING id,created_at',
-            values: [dataObj.token, dataObj.userId, dataObj.deviceInfo]
+            text: `INSERT INTO refresh_tokens (jwt_id,user_id,expires_at) VALUES ($1,$2,NOW() + INTERVAL '10 days') RETURNING created_at`,
+            values: [jwtId, userId]
         }
         const result = await pool.query(query);
         if (result.rowCount && result.rowCount > 0) {
-            console.log('token inserted');
+            console.log('token id inserted');
             return result.rows[0];
         } else {
             throw new Error;
         }
-    } catch (error) {
-        console.error("error while inserting refresh token");
+    } catch (err) {
+        console.error("error while inserting refresh token", err);
         return false;
     }
 }
@@ -89,6 +89,7 @@ export const semanticSearch = async (emb: any) => {
         const result = await pool.query(query);
         if (result.rows.length === 0) {
             console.log("no emb found")
+            return null;
         } else {
             console.log("found note:", result.rows[0])
             return result.rows[0];
@@ -97,5 +98,19 @@ export const semanticSearch = async (emb: any) => {
     } catch (err) {
         console.error(err)
         return false
+    }
+}
+
+export const doesRefreshTokenExists = async (jwtId: string) => {
+    try {
+        const query = {
+            text: 'SELECT 1 FROM refresh_tokens WHERE jwt_id=$1 LIMIT 1',
+            values: [jwtId]
+        }
+        const result = await pool.query(query);
+        return result.rowCount && result.rowCount > 0;
+    } catch (err) {
+        console.error(err);
+        return false;
     }
 }

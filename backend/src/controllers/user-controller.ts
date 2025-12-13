@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { createUser, findByEmail, insertEmbAndContent, insertRefreshToken, semanticSearch } from "../db/users-repository";
+import { createUser, doesRefreshTokenExists, findByEmail, insertEmbAndContent, insertRefreshToken, semanticSearch } from "../db/users-repository";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
 import { pipeLineFromOcrToEmb } from "../services/text-extraction-ocr";
 import { unlink } from "fs/promises";
@@ -30,7 +30,7 @@ export interface insertVectorObjType {
 }
 export const JWT_SECRET = "asdjhfouashtp0wehp9uohpodfhjsdhfuoas";
 
-const generateTokens = (userID: string): { accessToken: string, refreshToken: string } => {
+const generateTokens = (userID: string): { accessToken: string, refreshToken: string, jwtId: string } => {
     const jwt_id = uuidv4();
     const accessTokenJWT = jwt.sign({
         userId: userID
@@ -40,10 +40,10 @@ const generateTokens = (userID: string): { accessToken: string, refreshToken: st
     const refreshTokenJWT = jwt.sign({
         userId: userID
     }, JWT_SECRET, {
-        expiresIn: "30d",
+        expiresIn: "10d",
         jwtid: jwt_id
     })
-    return { accessToken: accessTokenJWT, refreshToken: refreshTokenJWT }
+    return { accessToken: accessTokenJWT, refreshToken: refreshTokenJWT, jwtId: jwt_id }
 }
 export const registerUser = async (req: Request, res: Response) => {
     try {
@@ -99,19 +99,11 @@ export const loginUser = async (req: Request, res: Response) => {
                 msg: "wrong credentials"
             })
         }
-        const { accessToken, refreshToken } = generateTokens(userExists.id);
-        const userAgent = req.headers["user-agent"];
-        const refTokenObj: refreshTokenType = {
-            token: refreshToken,
-            deviceInfo: userAgent!,
-            ipAddr: "",
-            userId: userExists.id,
+        const { accessToken, refreshToken, jwtId } = generateTokens(userExists.id);
+        const saveJwtid = await insertRefreshToken(jwtId, userExists.id);
+        if (!saveJwtid) {
+            throw new Error("error while saving jwt id");
         }
-        const saveRefreshToken = await insertRefreshToken(refTokenObj);
-        if (!saveRefreshToken) {
-            throw new Error("error while saving token")
-        }
-
         res.cookie('refresh_token', refreshToken, {
             secure: false,
             sameSite: 'lax',
@@ -149,24 +141,19 @@ export const uploadNote = async (req: Request, res: Response) => {
         // console.log(typeof content);
         // console.log(typeof content[0]);
 
-        const embeddingsFromPythonService = extractedTextAndEmb[0].embeddings[0];
-        const extracedTextFromImg = content[0].pageContent;
-        const tagsForImg = content[0].metaData.tags
+        // const embeddingsFromPythonService = extractedTextAndEmb[0].embeddings[0];
+        // const extracedTextFromImg = content[0].pageContent;
+        // const tagsForImg = content[0].metaData.tags
         console.log("just the pageContent \n", content[0].pageContent)
+
+        const userId = req.user.userId
         const insertObjForDB: insertVectorObjType = {
             emb: extractedTextAndEmb[0].embeddings[0],
             contents: content[0].pageContent,
             tags: content[0].metaData.tags,
             img_link: uploadFile.url,
-            //add user id
+            user_id: userId
         }
-        // console.log(typeof extracedTextFromImg)
-        // console.log(typeof tagsForImg)
-        // console.log(typeof embeddingsFromPythonService)
-        // console.log(Array.isArray(extract[0].embeddings));      // true
-        // console.log(Array.isArray(extract[0].embeddings[0]));   // true
-        // console.log(typeof extract[0].embeddings);              // object (normal for arrays)
-        // console.log(extract[0].embeddings[0].length);
 
         const insertEmbToDb = await insertEmbAndContent(insertObjForDB);
         if (insertEmbToDb) {
@@ -187,4 +174,49 @@ export const uploadNote = async (req: Request, res: Response) => {
         })
     }
 }
+
+export const refreshTokens = async (req: Request, res: Response) => {
+    try {
+        const token = req.cookies?.refreshToken;
+        if (!token) {
+            return res.status(401).json({ msg: "no token" })
+        }
+
+        jwt.verify(token, JWT_SECRET, async (err: any, decoded: any) => {
+            if (err) {
+                return res.status(403).json({ msg: "token expired" })
+            }
+
+            const { userId, jwtid } = decoded;
+
+            const checkToken = await doesRefreshTokenExists(jwtid);
+            if (!checkToken) {
+                //logoutUser();
+            }
+            const accessToken = jwt.sign({
+                userId: userId
+            }, JWT_SECRET, {
+                expiresIn: "15m"
+            })
+
+            res.status(201).json({
+                msg: "logged in",
+                accessToken: accessToken
+            })
+        })
+    } catch (err) {
+        console.error("error while refreshing tokens", err);
+        return res.status(500).json({
+            msg: "error while refreshing tokens"
+        })
+    }
+}
+
+// export const logoutUser = async () => {
+//     try {
+//
+//     } catch (err) {
+//         console.error("error while logging out")
+//     }
+// }
 

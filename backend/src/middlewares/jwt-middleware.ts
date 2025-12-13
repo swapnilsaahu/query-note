@@ -15,6 +15,7 @@ export const jwtMiddleware = (req: Request, res: Response, next: NextFunction) =
                 return res.status(403).json({ msg: 'invalid or expired token' })
             }
             req.user = decoded;
+            console.log("verified user");
             next();
         });
     } catch (err) {
