@@ -73,7 +73,8 @@ export const registerUser = async (req: Request, res: Response) => {
         else {
             res.status(201).json({
                 msg: "user successfully created",
-                user: createUserInDB
+                user: createUserInDB,
+                success: true
             })
         }
 
@@ -112,7 +113,8 @@ export const loginUser = async (req: Request, res: Response) => {
         res.status(201).json({
             msg: "logged in",
             accessToken: accessToken,
-            user: userExists.username
+            user: userExists.username,
+            success: true
         })
     } catch (error) {
         console.error("error while logging in");
