@@ -1,19 +1,27 @@
-import { Route, Routes } from 'react-router'
+import { BrowserRouter, Route, Routes } from 'react-router'
 import './App.css'
 import HomePage from './pages/HomePage'
 import RegisterPage from './pages/RegisterPage'
 import LoginPage from './pages/LoginPage'
 import DashBoardPage from './pages/DashboardPage'
+import ProtectedRoute from './utils/ProtectedRoute'
+import AppAuth from './utils/AppAuth'
 
 function App() {
     return (
         <>
-            <Routes>
-                <Route path='/' element={<HomePage />} />
-                <Route path='register' element={<RegisterPage />} />
-                <Route path='login' element={<LoginPage />} />
-                <Route path='dashboard' element={<DashBoardPage />} />
-            </Routes>
+            <AppAuth>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path='/' element={<HomePage />} />
+                        <Route path='register' element={<RegisterPage />} />
+                        <Route path='login' element={<LoginPage />} />
+                        <Route element={<ProtectedRoute />}>
+                            <Route path='dashboard' element={<DashBoardPage />} />
+                        </Route>
+                    </Routes>
+                </BrowserRouter >
+            </AppAuth >
         </>
     )
 }

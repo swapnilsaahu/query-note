@@ -1,6 +1,6 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
+import axios from "axios";
 import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import useUserStore from "../store/UserStore";
 
 const RegisterPage = () => {
@@ -15,7 +15,7 @@ const RegisterPage = () => {
     const signUpHandle = async () => {
         try {
             setSignUpLoading(true);
-            const url = "http://localhost:3000/api/v1/users/register"
+            const url = "/api/v1/users/register"
             const res = await axios.post(url, {
                 email: email,
                 password: password,
@@ -23,7 +23,7 @@ const RegisterPage = () => {
             })
             if (res.data.success) {
                 setLoginLoading(true);
-                const loginUrl = "http://localhost:3000/api/v1/users/login";
+                const loginUrl = "/api/v1/users/login";
                 const resLogin = await axios.post(loginUrl, {
                     email: email,
                     password: password
@@ -41,11 +41,11 @@ const RegisterPage = () => {
             setLoginLoading(false);
         }
     }
-    useEffect(() => {
-        if (token && token !== "") {
-            navigate('/dashboard');
-        }
-    }, [token])
+    // useEffect(() => {
+    //     if (token && token !== "") {
+    //         navigate('/dashboard');
+    //     }
+    // }, [token])
 
     return (
         loginLoading ? <div>logging in</div> :
