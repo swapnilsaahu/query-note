@@ -1,6 +1,17 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 
-const NavBar = () => {
+type Note = {
+    id: number,
+    name: string
+}
+type Props = {
+    notes: Note[]
+}
+const NavBar = ({ notes }: Props) => {
+    const navigate = useNavigate();
+    const clickedItem = (name: string) => {
+        navigate(`/notes/${name}`);
+    }
     return (
         <nav className="h-screen bg-black text-white text-2xl w-xs">
             <div>
@@ -17,9 +28,9 @@ const NavBar = () => {
             <div>
                 <h3>Notes</h3>
                 <ul>
-                    <li>
-                        <NavLink to="">Note1</NavLink>
-                    </li>
+                    {notes.map(x => (
+                        <li key={x.id} onClick={() => clickedItem(x.name)}>{x.name}</li>
+                    ))}
                 </ul>
             </div>
         </nav>
