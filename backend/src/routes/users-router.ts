@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, refreshTokens, registerUser, uploadNote } from "../controllers/user-controller";
+import { loginUser, refreshTokens, registerUser, uploadNote, verifiedUser } from "../controllers/user-controller";
 import { upload } from "../middlewares/multer-middleware";
 import { jwtMiddleware } from "../middlewares/jwt-middleware";
 

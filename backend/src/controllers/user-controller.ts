@@ -24,7 +24,7 @@ export interface refreshTokenType {
 export interface insertVectorObjType {
     emb: Array<number>,
     contents: string,
-    tags: string,
+    //tags: string,
     img_link: string,
     user_id: string
 }
@@ -152,9 +152,9 @@ export const uploadNote = async (req: Request, res: Response) => {
         const insertObjForDB: insertVectorObjType = {
             emb: extractedTextAndEmb[0].embeddings[0],
             contents: content[0].pageContent,
-            tags: content[0].metaData.tags,
+            //tags: content[0].metaData.tags,
             img_link: uploadFile.url,
-            user_id: userId
+            user_id: userId,
         }
 
         const insertEmbToDb = await insertEmbAndContent(insertObjForDB);
@@ -179,7 +179,7 @@ export const uploadNote = async (req: Request, res: Response) => {
 
 export const refreshTokens = async (req: Request, res: Response) => {
     try {
-        const token = req.cookies?.refreshToken;
+        const token = req.cookies?.refresh_token;
         if (!token) {
             return res.status(401).json({ msg: "no token" })
         }
@@ -213,7 +213,12 @@ export const refreshTokens = async (req: Request, res: Response) => {
         })
     }
 }
-
+export const verifiedUser = (req: Request, res: Response) => {
+    res.status(200).json({
+        success: true,
+        msg: "verified user"
+    })
+}
 // export const logoutUser = async () => {
 //     try {
 //

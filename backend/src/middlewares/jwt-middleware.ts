@@ -4,6 +4,7 @@ import { JWT_SECRET } from "../controllers/user-controller";
 
 export const jwtMiddleware = (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log("req reaching jwt middleware");
         const authHeader = req.headers['authorization'];
         const token = authHeader && authHeader.split(' ')[1];
 
