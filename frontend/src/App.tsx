@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage'
 import DashBoardPage from './pages/DashboardPage'
 import ProtectedRoute from './utils/ProtectedRoute'
 import AppAuth from './utils/AppAuth'
+import NavBar from './components/NavBar'
 
 function App() {
     return (

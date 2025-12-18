@@ -1,12 +1,15 @@
+import NavBar from "../components/NavBar";
 import useUserStore from "../store/UserStore";
 
 const DashBoardPage = () => {
-    const accessToken = useUserStore(state => state.accessToken)
-    console.log(accessToken);
     return (
-        <div>
-            this is DashBoardPage
-            <div>{accessToken}</div>
+        <div className="flex">
+            <div>
+                <NavBar />
+            </div>
+            <div>
+                home screen
+            </div>
         </div>
 
     )
