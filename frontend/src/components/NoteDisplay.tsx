@@ -11,7 +11,6 @@ const NoteDisplay = () => {
     const [links, setLinks] = useState<string[]>([]);
     const [largestTimestamp, setLargestTimestamp] = useState("");
     const [smallestTimestamp, setSmallestTimestamp] = useState("");
-    const mountRef = useRef(false);
     const accessToken = useUserStore(state => state.accessToken);
     useEffect(() => {
         const fetchData = async () => {
@@ -42,9 +41,9 @@ const NoteDisplay = () => {
     if (loading) return <div>loading...</div>
     return (
         <>
-            <div className="flex justify-center items-center">
-                <div>{links.map((x) => (
-                    <div key={x}>{x}</div>
+            <div className="flex mx-auto">
+                <div className="">{links.map((x) => (
+                    <img className="" key={x} src={x} />
                 ))}</div>
             </div>
         </ >

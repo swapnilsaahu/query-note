@@ -7,7 +7,6 @@ import DashBoardPage from './pages/DashboardPage'
 import ProtectedRoute from './utils/ProtectedRoute'
 import AppAuth from './utils/AppAuth'
 import NoteDisplay from './components/NoteDisplay'
-import AppLayout from './components/AppLayout'
 
 function App() {
     return (
@@ -19,10 +18,8 @@ function App() {
                         <Route path='register' element={<RegisterPage />} />
                         <Route path='login' element={<LoginPage />} />
                         <Route element={<ProtectedRoute />}>
-                            <Route element={<AppLayout />}>
-                                <Route path='dashboard' element={<DashBoardPage />} />
-                                <Route path='notes/:tag' element={<NoteDisplay />} />
-                            </Route>
+                            <Route path='dashboard' element={<DashBoardPage />} />
+                            <Route path='notes/:tag' element={<NoteDisplay />} />
                         </Route>
                     </Routes>
                 </BrowserRouter >

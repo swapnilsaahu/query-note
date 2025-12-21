@@ -12,7 +12,10 @@ const LoginPage = () => {
     const [loginLoading, setLoginLoading] = useState(false);
     const navigate = useNavigate();
     const accessToken = useUserStore(s => s.accessToken);
-    if (accessToken) navigate("/dashboard");
+
+    if (accessToken) {
+        navigate("/dashboard");
+    }
     const loginHandle = async () => {
         try {
             setSignInLoading(true);
