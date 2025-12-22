@@ -12,6 +12,7 @@ const responseSchema: responseType = {
     "extractedText": "string",
     "relatedTags": "string"
 }
+const list = "cs: cn,dbms,os,c,coa,deld,dsa. developement: backend,frontend,devops"
 export async function textExtractionOcr(filePath: string) {
     const ai = new GoogleGenAI({});
     const base64ImageFile = fs.readFileSync(filePath, {
@@ -30,7 +31,9 @@ export async function textExtractionOcr(filePath: string) {
                     data: base64ImageFile,
                 },
             },
-            { text: "Extract the text from the image and make sure to preserve the new lines, bullet points, seperators etc,also give related tags at most 5 for better indexing it should be comma seperated, returned format should be in JSON where extractedText is one key and another key is for relatedTags." }
+            {
+                text: `Extract the text from the image and make sure to preserve the new lines, bullet points, seperators etc,also give single related tag for better indexing use the following list for reference ${list}, returned format should be in JSON where extractedText is one key and another key is for relatedTags.`
+            }
         ],
     });
     console.log(result.text);

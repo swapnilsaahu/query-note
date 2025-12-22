@@ -7,7 +7,7 @@ const router = Router();
 
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
-router.route("/uploadNote").post(jwtMiddleware, upload.array('image', 4), uploadNote);
+router.route("/uploadNote").post(jwtMiddleware, upload.single('image'), uploadNote);
 router.route("/auth/refresh").post(refreshTokens);
 
 export default router;

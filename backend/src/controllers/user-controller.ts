@@ -24,7 +24,7 @@ export interface refreshTokenType {
 export interface insertVectorObjType {
     emb: Array<number>,
     contents: string,
-    //tags: string,
+    tag: string,
     img_link: string,
     user_id: string
 }
@@ -125,13 +125,15 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const uploadNote = async (req: Request, res: Response) => {
     try {
+        console.log("req reaching upload note")
+        console.log(req.file?.path)
         if (!req.file) {
-            throw new Error("file not found");
-        };
-
-        const uploadFile: UploadApiResponse | false = await uploadService(req.file?.path); //img cloud upload
-        if (!uploadFile) throw new Error;
-
+            return res.status(404).json({
+                msg: "file not found"
+            });
+        }
+        const uploadFile = await uploadService(req.file?.path); //img cloud upload
+        if (!uploadFile) throw new Error("failed to upload");
         const extractedTextAndEmb = await pipeLineFromOcrToEmb(req.file.path); //ocr to emb
         if (!extractedTextAndEmb) {
             throw new Error("error while extraction and emb")
@@ -152,7 +154,7 @@ export const uploadNote = async (req: Request, res: Response) => {
         const insertObjForDB: insertVectorObjType = {
             emb: extractedTextAndEmb[0].embeddings[0],
             contents: content[0].pageContent,
-            //tags: content[0].metaData.tags,
+            tag: content[0].metaData.tags,
             img_link: uploadFile.url,
             user_id: userId,
         }

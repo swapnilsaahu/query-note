@@ -61,11 +61,11 @@ export const insertRefreshToken = async (jwtId: string, userId: string) => {
 
 export const insertEmbAndContent = async (vecObj: insertVectorObjType) => {
     try {
-        const { emb, img_link, contents, user_id, tags } = vecObj;
+        const { emb, img_link, contents, user_id, tag } = vecObj;
         const vector = toSql(emb); //important convert to pgvector format {1,2,3,4} to [1,2,3,4] pgvector doesnt accept curly brackets
         const query = {
-            text: 'INSERT INTO notes (vec_emb,contents,tags,user_id,img_link) VALUES ($1,$2,$3,$4,$5)',
-            values: [vector, contents, tags, user_id, img_link]
+            text: 'INSERT INTO notes (vec_emb,contents,tag,user_id,img_link) VALUES ($1,$2,$3,$4,$5)',
+            values: [vector, contents, tag, user_id, img_link]
         }
         const result = await pool.query(query);
         console.log("whats going on", result)

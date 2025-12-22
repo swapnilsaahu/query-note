@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getInitialNotes, getNextNotes, getPrevNotes } from "../db/notes-repository";
+import { getInitialNotes, getNavNotes, getNextNotes, getPrevNotes } from "../db/notes-repository";
 
 interface ParamsType {
     tag: string;
@@ -49,6 +49,23 @@ export const getNotes = async (req: Request<ParamsType, any, any, QueryType>, re
         console.error("error while getting notes", error);
         res.status(500).json({
             msg: "error while getting notes"
+        })
+    }
+}
+
+export const getNavBarNotes = async (req: Request, res: Response) => {
+    try {
+        const { userId } = req.user;
+
+        const result = await getNavNotes(userId);
+
+        return res.status(200).json({
+            structure: result
+        })
+    } catch (error) {
+        console.error("server error", error);
+        res.status(500).json({
+            msg: "server error"
         })
     }
 }
