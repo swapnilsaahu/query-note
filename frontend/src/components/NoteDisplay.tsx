@@ -43,7 +43,7 @@ const NoteDisplay = () => {
         <>
             <div className="flex mx-auto">
                 <div className="">{links.map((x) => (
-                    <img className="" key={x} src={x} />
+                    <img className="w-xl m-4" key={x} src={x} />
                 ))}</div>
             </div>
         </ >

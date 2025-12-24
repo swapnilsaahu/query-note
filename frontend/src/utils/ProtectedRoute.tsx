@@ -13,9 +13,13 @@ const ProtectedRoute = () => {
         return <Navigate to="/login" replace />
     }
     return (
-        <div className="flex ">
-            <NavBar />
-            <Outlet />;
+        <div className="flex h-screen">
+            <aside className="fixed left-0 top-0 h-screen">
+                <NavBar />
+            </aside>
+            <main className="ml-64 overflow-y-auto">
+                <Outlet />
+            </main>
         </div>
     )
 }
