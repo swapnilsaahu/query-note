@@ -8,6 +8,7 @@ import ProtectedRoute from './utils/ProtectedRoute'
 import AppAuth from './utils/AppAuth'
 import NoteDisplay from './components/NoteDisplay'
 import SearchBot from './components/SearchBot'
+import UploadComponent from './components/UploadComponent'
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                         <Route path='login' element={<LoginPage />} />
                         <Route element={<ProtectedRoute />}>
                             <Route path='dashboard' element={<DashBoardPage />} />
+                            <Route path='uploadNote' element={<UploadComponent />} />
                             <Route path='notes/:tag' element={<NoteDisplay />} />
                             <Route path='/search-bot' element={<SearchBot />} />
                         </Route>

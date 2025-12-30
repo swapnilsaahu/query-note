@@ -1,4 +1,5 @@
 import NavBar from "../components/NavBar";
+import UploadComponent from "../components/UploadComponent";
 import useUserStore from "../store/UserStore";
 
 const DashBoardPage = () => {
@@ -6,6 +7,7 @@ const DashBoardPage = () => {
     return (
         <div className="flex h-screen">
             <h1>hello world</h1>
+            <UploadComponent />
         </div >
 
     )
