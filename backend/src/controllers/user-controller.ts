@@ -21,12 +21,15 @@ export interface refreshTokenType {
     ipAddr: string,
     userId: string
 }
+type position = "start" | "end" | "middle";
+
 export interface insertVectorObjType {
     emb: Array<number>,
     contents: string,
     tag: string,
     img_link: string,
-    user_id: string
+    user_id: string,
+    position: position
 }
 export const JWT_SECRET = "asdjhfouashtp0wehp9uohpodfhjsdhfuoas";
 
@@ -141,7 +144,11 @@ export const uploadNote = async (req: Request, res: Response) => {
         console.log("just the embeddings \n", extractedTextAndEmb[0].embeddings)
         console.log("\n", extractedTextAndEmb[1])
         const content = JSON.parse(extractedTextAndEmb[1])
-
+        const { position } = req.body;
+        if (!position) {
+            console.log("position not available");
+        }
+        console.log("positon", position);
         // console.log(typeof content);
         // console.log(typeof content[0]);
 
@@ -157,6 +164,7 @@ export const uploadNote = async (req: Request, res: Response) => {
             tag: content[0].metaData.tags,
             img_link: uploadFile.url,
             user_id: userId,
+            position: position
         }
 
         const insertEmbToDb = await insertEmbAndContent(insertObjForDB);
