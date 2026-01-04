@@ -8,7 +8,10 @@ export const userQueryController = async (req: Request, res: Response) => {
         if (!responseFromLLM) throw new Error('error while generating response');
 
         return res.status(200).json({
-            responseText: responseFromLLM
+            id: responseFromLLM[2],
+            query: userQuery,
+            responseText: responseFromLLM[0],
+            imgLink: responseFromLLM[1]
         })
     } catch (err) {
         console.error("server err", err);

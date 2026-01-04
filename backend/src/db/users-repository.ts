@@ -57,8 +57,8 @@ export const insertEmbAndContent = async (vecObj: insertVectorObjType) => {
     //pg will handle conversion to numeric
     console.log(resMaxAndMin);
     console.log(resMaxAndMin.rows[0]);
-    const maxValue = new Decimal(resMaxAndMin.rows[0].max_value);
-    const minValue = new Decimal(resMaxAndMin.rows[0].min_value);
+    const maxValue = new Decimal(resMaxAndMin.rows[0].max_value || "0");
+    const minValue = new Decimal(resMaxAndMin.rows[0].min_value || "0");
     console.log("max and min values", maxValue, minValue);
     let sequenceValue = new Decimal("0");
     if (position === "start") {

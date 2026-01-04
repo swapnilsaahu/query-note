@@ -13,12 +13,12 @@ export const serachQuery = async (query: string) => {
         if (!docQuery) throw new Error("error while conv query to doc");
 
         const chunkedQuery = await chunkingText(docQuery);
-        const resVec = await documentTextToVec(undefined, chunkedQuery);
+        const resVec = await documentTextToVec(chunkedQuery);
         const queryVec = resVec.embeddings[0];
         const topResult = await semanticSearch(queryVec);
 
         console.log(topResult);
-        return [topResult.contents, userQuery];
+        return [topResult.contents, topResult.img_link, topResult.sequence];
     } catch (error) {
         console.error("error while getting the semantic result");
     }
@@ -38,11 +38,17 @@ export const llmRequestWithPrompt = async (query: string) => {
                 systemInstruction: `
 You are an expert AI assistant highly skilled in understanding, interpreting, and reasoning over textual information retrieved from documents.
 
-Your goal is to give clear, helpful, and accurate answers by combining:
-- the provided context (retrieved chunks),
-- your reasoning abilities, and
-- general background knowledge when appropriate,
-- give like 3 to 5 lines not single line response, add your reasoning if needed
+Explain the following topic in clear, complete detail for a learner.
+Do NOT summarize or give a short answer.
+
+Your explanation should:
+- Fully explain the idea from basics to understanding
+- Include explanations, examples, and interpretations where relevant
+- Address why the topic is important or meaningful
+- Clarify common confusions or misunderstandings
+
+Write in complete paragraphs with sufficient depth.
+Avoid brief or one-line responses.
 
 Guidelines:
 - Treat the retrieved context as the primary source of truth, but you may use general knowledge to clarify, connect ideas, or enhance explanations.
@@ -50,17 +56,15 @@ Guidelines:
 - If the context contains OCR imperfections (typos, broken words, incomplete lines), interpret them as best as possible.
 - Do not hallucinate specific facts (dates, numbers, names) that are not present or inferable.
 - Keep your explanations helpful, direct, and easy to understand.
-
-Answer Structure:
-1. **Answer** — the best possible answer integrating the context and your reasoning.
-2. **Context Support** — bullet points summarizing which parts of the provided context helped you answer.
-   - If the context does not fully answer the question, note which parts are assumed or based on general reasoning.
+- If the context does not fully answer the question, note which parts are assumed or based on general reasoning.
 Here is the following context which you need to consider ${context[0]}
+- Write in well-formed paragraphs with clear logical flow.
+- Don't Give markdown
 `,
             },
         });
         console.log(response.text);
-        return response.text;
+        return [response.text, context[1], context[2]];
 
     } catch (err) {
         console.error(err, "error with chatbot")

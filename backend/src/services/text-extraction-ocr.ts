@@ -12,7 +12,7 @@ const responseSchema: responseType = {
     "extractedText": "string",
     "relatedTags": "string"
 }
-const list = "cs: cn,dbms,os,c,coa,deld,dsa. developement: backend,frontend,devops"
+const list = "cs: cn,dbms,os,c,coa,deld,dsa,ml. developement: backend,frontend,devops,ui/ux"
 export async function textExtractionOcr(filePath: string) {
     const ai = new GoogleGenAI({});
     const base64ImageFile = fs.readFileSync(filePath, {
@@ -81,13 +81,12 @@ export const chunkingText = async (documents: DocumentInterface[]) => {
     }
 }
 
-export const documentTextToVec = async (chunks?: any, text?: string) => {
+export const documentTextToVec = async (chunks?: any) => {
     try {
-        const typeOfEmb = (chunks && chunks.trim().length > 0) ? "search_document" : "search_query"; //type of query need as nomic emb models expects it
-        const url = `http://localhost:8000/embed/${typeOfEmb}`;
+        const url = `http://localhost:7860/embed/`;
         const res = await axios.post(
             url,
-            chunks || text,    //send array directly or query
+            chunks,    //send array directly
             {
                 headers: { "Content-Type": "application/json" }
             }
@@ -98,8 +97,8 @@ export const documentTextToVec = async (chunks?: any, text?: string) => {
     } catch (err) {
         console.error("error while getting vectors")
     }
-
 }
+
 export const pipeLineFromOcrToEmb = async (filePath: string) => {
     try {
         const result = await textExtractionOcr(filePath);
@@ -108,7 +107,7 @@ export const pipeLineFromOcrToEmb = async (filePath: string) => {
         const chunks = await chunkingText(doc);
         console.log("following are the chunks", chunks);
 
-        const res = await documentTextToVec(chunks, undefined);
+        const res = await documentTextToVec(chunks);
         return [res, chunks];
     } catch (error) {
         console.error("error while executing main")
