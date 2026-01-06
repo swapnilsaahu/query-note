@@ -1,5 +1,5 @@
-import { insertVectorObjType, userType } from "../controllers/user-controller.ts";
-import { pool } from "./db.ts";
+import { insertVectorObjType, userType } from "../controllers/user-controller";
+import { pool } from "./db";
 import { toSql } from "pgvector";
 import { Decimal } from 'decimal.js';
 export const findByEmail = async (email: string) => {

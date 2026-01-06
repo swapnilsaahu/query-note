@@ -4,9 +4,9 @@ import cookieParser from "cookie-parser"
 const app: Application = express();
 const port = 3000;
 
-import usersRouter from "./routes/users-router.ts"
-import llmRouter from "./routes/llm-router.ts"
-import notesRouter from "./routes/note-routes.ts"
+import usersRouter from "./routes/users-router"
+import llmRouter from "./routes/llm-router"
+import notesRouter from "./routes/note-routes"
 
 app.use(cors());
 app.use(express.json());

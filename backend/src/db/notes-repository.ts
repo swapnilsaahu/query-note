@@ -1,7 +1,4 @@
-import ta from "zod/v4/locales/ta";
-import { pool } from "./db.ts";
-import { toSql } from "pgvector";
-import { text } from "express";
+import { pool } from "./db";
 
 export const getNextNotes = async (userId: string, tag: string, largestTimestamp: string) => {
     const query = {

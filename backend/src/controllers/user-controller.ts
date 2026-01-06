@@ -59,7 +59,7 @@ export const registerUser = async (req: Request, res: Response) => {
         const userExists = await findByEmail(email);
         if (userExists) {
             res.status(409).json({
-                msg: "user already exists"
+                msg: "user already exi"
             })
             return;
         }
@@ -92,9 +92,9 @@ export const loginUser = async (req: Request, res: Response) => {
         const { email, password } = req.body;
         const userExists = await findByEmail(email);
         if (!userExists) {
-            console.log("user doesnt exists");
+            console.log("user doesnt exi");
             res.status(409).json({
-                msg: "user doesnt exists"
+                msg: "user doesnt exi"
             })
         }
         const matchPass = await bcrypt.compare(password, userExists.password);

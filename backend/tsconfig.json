@@ -1,15 +1,27 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "esModuleInterop": true,
-        "target": "es6",
-        "moduleResolution": "node",
-        "sourceMap": true,
+        "target": "ES2020",
+        "lib": [
+            "ES2020"
+        ],
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "rootDir": "src",
         "outDir": "dist",
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
         "strict": true,
-        "allowImportingTsExtensions": true
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "removeComments": true,
+        "noEmitOnError": true
     },
-    "lib": [
-        "es2015"
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
     ]
 }
