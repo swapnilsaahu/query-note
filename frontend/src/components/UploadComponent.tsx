@@ -1,7 +1,6 @@
 import axios from "axios";
-import { useState, type ChangeEvent, type EventHandler, type FormEvent, type InputEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import useUserStore from "../store/UserStore";
-import arrow from "../assets/arrowuploadimg.png"
 import { FaFileAlt } from "react-icons/fa";
 
 const UploadComponent = () => {

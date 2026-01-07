@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import { IoMdSend } from "react-icons/io";
 import useUserStore from "../store/UserStore";
 

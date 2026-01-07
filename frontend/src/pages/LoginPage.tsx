@@ -1,15 +1,13 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import useUserStore from "../store/UserStore";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const token = useUserStore(state => state.accessToken);
     const updateToken = useUserStore(state => state.updateToken);
     const [signInloading, setSignInLoading] = useState(false);
-    const [loginLoading, setLoginLoading] = useState(false);
     const navigate = useNavigate();
     const accessToken = useUserStore(s => s.accessToken);
 

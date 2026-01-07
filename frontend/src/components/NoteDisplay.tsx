@@ -1,16 +1,15 @@
 import axios from "axios";
-import { useEffect, useReducer, useRef, useState, type PropsWithChildren } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import useUserStore from "../store/UserStore";
-import NavBar from "./NavBar";
 
 
 const NoteDisplay = () => {
     const { tag } = useParams();
     const [loading, setLoading] = useState(false);
     const [links, setLinks] = useState<string[]>([]);
-    const [largestTimestamp, setLargestTimestamp] = useState("");
-    const [smallestTimestamp, setSmallestTimestamp] = useState("");
+    //const [largestTimestamp, setLargestTimestamp] = useState("");
+    //const [smallestTimestamp, setSmallestTimestamp] = useState("");
     const accessToken = useUserStore(state => state.accessToken);
     useEffect(() => {
         const fetchData = async () => {
@@ -27,8 +26,8 @@ const NoteDisplay = () => {
                 })
                 if (res) {
                     setLinks([...res.data.rows]);
-                    setLargestTimestamp(res.data.largestTimestamp);
-                    setSmallestTimestamp(res.data.smallestTimestamp);
+                    //setLargestTimestamp(res.data.largestTimestamp);
+                    //setSmallestTimestamp(res.data.smallestTimestamp);
                 }
             } catch (error) {
                 console.error("error while fetching")

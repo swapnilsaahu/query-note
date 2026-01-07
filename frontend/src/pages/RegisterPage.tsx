@@ -1,17 +1,15 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState } from "react";
+import { Link } from "react-router";
 import useUserStore from "../store/UserStore";
 
 const RegisterPage = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [username, setUsername] = useState("");
-    const navigate = useNavigate();
     const [signUpLoading, setSignUpLoading] = useState<boolean>(false);
     const [loginLoading, setLoginLoading] = useState<boolean>(false);
     const addDetails = useUserStore(state => state.addDetials)
-    const token = useUserStore(state => state.accessToken);
     const signUpHandle = async () => {
         try {
             setSignUpLoading(true);

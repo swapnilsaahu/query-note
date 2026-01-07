@@ -1,7 +1,5 @@
-import useUserStore from "../store/UserStore";
 
 const DashBoardPage = () => {
-    const accessToken = useUserStore(state => state.accessToken);
     return (
         <div className="h-screen text-lavender-grey-200 flex justify-center">
             <div className="my-16">

@@ -8,22 +8,20 @@ export type NavStructure = {
 }
 interface userStore {
     email: string,
-    username: string,
     accessToken: string | null,
     authLoading: boolean,
     navDetails: NavStructure[] | null,
-    addDetials: (email: string, accessToken: string, username: string) => void,
+    addDetials: (email: string, accessToken: string) => void,
     updateToken: (accessToken: string | null) => void,
     updateAuthLoading: (loading: boolean) => void,
     updateNav: (newList: NavStructure[]) => void
 }
 const useUserStore = create<userStore>()((set) => ({
     email: "",
-    username: "",
     accessToken: "",
     authLoading: true,
     navDetails: [],
-    addDetials: (email, accessToken, username) => set({ email: email, accessToken: accessToken, username: username }),
+    addDetials: (email, accessToken) => set({ email: email, accessToken: accessToken }),
     updateToken: (accessToken) => set({ accessToken: accessToken }),
     updateAuthLoading: (loading) => set({ authLoading: loading }),
     updateNav: (newList) => set({
