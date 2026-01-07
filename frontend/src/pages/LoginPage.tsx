@@ -24,7 +24,6 @@ const LoginPage = () => {
             })
             if (res.data.success) {
                 updateToken(res.data.accessToken);
-
             }
 
         } catch (err) {
