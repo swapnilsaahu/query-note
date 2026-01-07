@@ -83,7 +83,7 @@ export const chunkingText = async (documents: DocumentInterface[]) => {
 
 export const documentTextToVec = async (chunks?: any) => {
     try {
-        const url = `http://localhost:7860/embed/`;
+        const url = process.env.VECTOR_EMB_API! || "https://swapnilsaahu-embedding-model-notes.hf.space/embed/";
         const res = await axios.post(
             url,
             chunks,    //send array directly
