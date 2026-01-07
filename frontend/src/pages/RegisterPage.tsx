@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../lib/api";
 import { useState } from "react";
 import { Link } from "react-router";
 import useUserStore from "../store/UserStore";
@@ -14,7 +14,7 @@ const RegisterPage = () => {
         try {
             setSignUpLoading(true);
             const url = "/api/v1/users/register"
-            const res = await axios.post(url, {
+            const res = await api.post(url, {
                 email: email,
                 password: password,
                 username: username
@@ -22,7 +22,7 @@ const RegisterPage = () => {
             if (res.data.success) {
                 setLoginLoading(true);
                 const loginUrl = "/api/v1/users/login";
-                const resLogin = await axios.post(loginUrl, {
+                const resLogin = await api.post(loginUrl, {
                     email: email,
                     password: password
                 })

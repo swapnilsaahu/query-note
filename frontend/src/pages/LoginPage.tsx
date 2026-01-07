@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../lib/api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import useUserStore from "../store/UserStore";
@@ -18,7 +18,7 @@ const LoginPage = () => {
         try {
             setSignInLoading(true);
             const url = "/api/v1/users/login";
-            const res = await axios.post(url, {
+            const res = await api.post(url, {
                 email: email,
                 password: password
             })

@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useEffect, useRef } from "react"
 import useUserStore from "../store/UserStore";
+import api from "../lib/api";
 
 const AppAuth = ({ children }: { children: React.ReactNode }) => {
     const updateToken = useUserStore((s) => s.updateToken);
@@ -13,7 +13,7 @@ const AppAuth = ({ children }: { children: React.ReactNode }) => {
         const verifAuth = async () => {
             try {
                 const url = '/api/v1/users/auth/refresh';
-                const res = await axios.post(url, {}, {
+                const res = await api.post(url, {}, {
                     withCredentials: true
                 })
                 if (!isMounted) return;

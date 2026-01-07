@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../lib/api";
 import { useState } from "react";
 import { IoMdSend } from "react-icons/io";
 import useUserStore from "../store/UserStore";
@@ -16,7 +16,7 @@ const SearchBot = () => {
     const updateChat = async () => {
         const url = `/api/v1/llm/userQuery/`
         try {
-            const res = await axios.post(url, {
+            const res = await api.post(url, {
                 userQuery: searchQuery
             }, {
                 headers: {

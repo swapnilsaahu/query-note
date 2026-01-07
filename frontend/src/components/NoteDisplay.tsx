@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../lib/api";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import useUserStore from "../store/UserStore";
@@ -18,7 +18,7 @@ const NoteDisplay = () => {
                 const url = `/api/v1/notes/getNotes/${tag}`
                 console.log(accessToken);
                 console.log(tag);
-                const res = await axios.get(url, {
+                const res = await api.get(url, {
                     withCredentials: true,
                     headers: {
                         Authorization: `Bearer ${accessToken}`

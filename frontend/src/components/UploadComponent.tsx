@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../lib/api";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import useUserStore from "../store/UserStore";
 import { FaFileAlt } from "react-icons/fa";
@@ -26,7 +26,7 @@ const UploadComponent = () => {
         formData.append("position", "end");
         const url = "/api/v1/users/uploadNote"
         try {
-            const res = await axios.post(url, formData, {
+            const res = await api.post(url, formData, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "multipart/form-data"

@@ -1,12 +1,12 @@
 import { Link, NavLink, useNavigate } from "react-router";
 import useUserStore from "../store/UserStore";
 import { useEffect } from "react";
-import axios from "axios";
 import { IoHomeOutline } from "react-icons/io5";
 import { CiFolderOn } from "react-icons/ci";
 import { MdOutlineManageSearch } from "react-icons/md";
 import { BsPersonCircle } from "react-icons/bs";
 import { IoCloudUploadOutline } from "react-icons/io5";
+import api from "../lib/api";
 
 const NavBar = () => {
 
@@ -20,7 +20,7 @@ const NavBar = () => {
     const fetchNavLinks = async () => {
         try {
             const url = `/api/v1/notes/getNavs`;
-            const res = await axios.get(url, {
+            const res = await api.get(url, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 },
