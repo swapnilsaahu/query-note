@@ -40,8 +40,8 @@ const UploadComponent = () => {
         }
     }
     return (
-        <div className="flex flex-col justify-center items-center m-2 gap-8 text-lavender-grey-200">
-            <img src={preview} alt="Image preview" height="600px" width="600px" className="border-4 rounded-2xl border-lavender-grey-400 mt-20" />
+        <div className="flex flex-col justify-center items-center sm:m-2 gap-8 text-lavender-grey-200">
+            <img src={preview} alt="Image preview" height="600px" width="600px" className="border-4 rounded-2xl border-lavender-grey-400 mt-20 " />
             <div className="flex gap-2">
                 <FaFileAlt className="text-2xl mt-1" />
                 <input type="file" onChange={handlePreview} className=" border-lavender-grey-900 hover:bg-lavender-grey-700" />
