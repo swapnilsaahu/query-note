@@ -1,4 +1,4 @@
-import api from "../lib/api";
+import api from "../lib/api"
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import useUserStore from "../store/UserStore";
