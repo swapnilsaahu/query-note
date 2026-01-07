@@ -40,13 +40,13 @@ const NoteDisplay = () => {
     }, [tag])
     if (loading) return <div>loading...</div>
     return (
-        <>
-            <div className="flex mx-auto">
+        <div className="flex justify-center">
+            <div className="mx-auto">
                 <div className="">{links.map((x) => (
                     <img className="w-xl m-4" key={x} src={x} />
                 ))}</div>
             </div>
-        </ >
+        </div>
     )
 }
 export default NoteDisplay;

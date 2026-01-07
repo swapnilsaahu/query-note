@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useState, type ChangeEvent, type EventHandler, type FormEvent, type InputEvent } from "react";
 import useUserStore from "../store/UserStore";
+import arrow from "../assets/arrowuploadimg.png"
+import { FaFileAlt } from "react-icons/fa";
 
 const UploadComponent = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -39,12 +41,14 @@ const UploadComponent = () => {
         }
     }
     return (
-        <>
-            <img src={preview} alt="image preview" />
-            <input type="file" onChange={handlePreview} />
-            <label>Upload file</label>
-            {loading ? <div>loading..</div> : <input type="submit" onClick={handleSubmit} value="submit" />}
-        </>
+        <div className="flex flex-col justify-center items-center m-2 gap-8 text-lavender-grey-200">
+            <img src={preview} alt="Image preview" height="600px" width="600px" className="border-4 rounded-2xl border-lavender-grey-400 mt-20" />
+            <div className="flex gap-2">
+                <FaFileAlt className="text-2xl mt-1" />
+                <input type="file" onChange={handlePreview} className=" border-lavender-grey-900 hover:bg-lavender-grey-700" />
+            </div>
+            {loading ? <div>loading..</div> : <input type="submit" onClick={handleSubmit} value="Upload" className="border-2 bg-lavender-grey-500 text-lavender-grey-950 py-4 px-10 text-xl rounded-4xl border-black p-2 hover:bg-lavender-grey-400" />}
+        </div>
     )
 }
 export default UploadComponent;

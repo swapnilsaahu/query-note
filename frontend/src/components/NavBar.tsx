@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router";
+import { Link, NavLink, useNavigate } from "react-router";
 import useUserStore from "../store/UserStore";
 import { useEffect } from "react";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { IoHomeOutline } from "react-icons/io5";
 import { CiFolderOn } from "react-icons/ci";
 import { MdOutlineManageSearch } from "react-icons/md";
 import { BsPersonCircle } from "react-icons/bs";
+import { IoCloudUploadOutline } from "react-icons/io5";
 
 const NavBar = () => {
 
@@ -38,21 +39,27 @@ const NavBar = () => {
         fetchNavLinks();
     }, [accessToken])
     return (
-        <nav className="h-screen bg-black text-white text-2xl w-64 p-2 fixed ">
+        <nav className="h-screen bg-lavender-grey-900 text-lavender-grey-200 text-2xl w-72 p-2 fixed ">
             <div className="flex flex-col m-2 gap-2">
                 <div className="my-8 mx-2">
                     <h3 className="text-4xl mb-8 font-bold">Query Note</h3>
                     <ul className="">
                         <li className="flex gap-2 my-6 mx-2">
                             <IoHomeOutline className="mt-1" />
-                            <div className="text-2xl">
+                            <div className="text-2xl hover:underline">
                                 <NavLink to="/dashboard">Home</NavLink>
                             </div>
                         </li>
                         <li>
-                            <div className="flex gap-2 my-6 mx-2">
+                            <div className="flex gap-2 my-6 mx-2 hover:underline">
                                 <MdOutlineManageSearch className="mt-1" />
                                 <NavLink to="/search-bot">Search</NavLink>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="flex gap-2 my-6 mx-2 hover:underline">
+                                <IoCloudUploadOutline className="mt-1" />
+                                <NavLink to="/uploadNote">Upload</NavLink>
                             </div>
                         </li>
                     </ul>
@@ -61,7 +68,7 @@ const NavBar = () => {
                     <h3 className="mb-4 font-bold">Notes</h3>
                     <div className="">
                         {navDetails?.map(x => (
-                            <div className="hover:bg-gray-900 hover:rounded-2xl m-2 p-2 cursor-pointer" key={x.id} onClick={() => clickedItem(x.subject)}>
+                            <div className="hover:bg-lavender-grey-600 hover:rounded-2xl m-2 p-2 cursor-pointer" key={x.id} onClick={() => clickedItem(x.subject)}>
                                 <div className="flex gap-2"><CiFolderOn className="my-1" />{x.subject}</div></div>
                         ))}
                     </div>
@@ -69,7 +76,7 @@ const NavBar = () => {
                 <div className="flex fixed bottom-0 my-6 mx-4 gap-2 text-3xl ">
                     <BsPersonCircle className="mt-1" />
                     <div>
-                        Profile
+                        <Link to="/profile" >Profile</Link>
                     </div>
                 </div>
             </div>

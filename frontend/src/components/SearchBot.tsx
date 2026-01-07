@@ -3,9 +3,15 @@ import { useState, type ChangeEvent } from "react";
 import { IoMdSend } from "react-icons/io";
 import useUserStore from "../store/UserStore";
 
+interface responseType {
+    id: string,
+    query: string,
+    responseText: string,
+    imgLink: string
+}
 const SearchBot = () => {
     const [searchQuery, setSearchQuery] = useState("");
-    const [chatHistory, setChatHistory] = useState<Array<string>>([]);
+    const [chatHistory, setChatHistory] = useState<Array<responseType>>([]);
     const accessToken = useUserStore(s => s.accessToken);
     const updateChat = async () => {
         const url = `/api/v1/llm/userQuery/`
@@ -18,7 +24,7 @@ const SearchBot = () => {
                 }
             });
             if (!res.data) return;
-            setChatHistory(prev => [...prev, searchQuery, res.data.responseText]);
+            setChatHistory(prev => [...prev, res.data]);
             setSearchQuery('');
         } catch (error) {
             console.error(error, "error while fetching llmresponse");
@@ -26,13 +32,27 @@ const SearchBot = () => {
     }
     return (
         <div>
-            <div className="mb-50">
-                {chatHistory.map((chat, index) => <pre key={index} className="text-wrap mx-40 my-10 border-black border-2 p-2 ">{chat}</pre>)}
+            <div className="mb-50 text-lavender-grey-200">
+                {chatHistory.map((chat) => <div key={chat.id}>
+                    <pre className="text-wrap text-2xl mx-40 my-10 border-lavender-grey-600 border-2 p-2 ">{chat.query}</pre>
+                    <div className="text-wrap mx-40 my-10 border-lavender-grey-600 border-2 p-2 ">
+                        <p className="text-wrap text-2xl whitespace-pre-line">{chat.responseText}</p>
+                        <a href={chat.imgLink} target="_blank" rel="noopener noreferrer" className="text-lavender-grey-300 underline font-bold"> Refernce image </a>
+                    </div>
+                </div>)}
             </div>
-            <div className="flex rounded-2xl bg-gray-400 text-black text-2xl h-16 fixed bottom-0 left-1/5 w-3/4 mb-8 shadow-xl">
-                <input defaultValue="query chatbot" onChange={e => setSearchQuery(e.target.value)} value={searchQuery} className="w-full mx-2 focus:outline-none p-4 rounded-2xl"></input>
-                <IoMdSend className="text-4xl mt-3 mx-2" onClick={updateChat} />
+            {(chatHistory.length === 0) ? <div className="flex justify-center items-center text-lavender-grey-200">
+                <div className="flex flex-col relative items-center">
+                    <h2 className="text-6xl font-bold m-8">Query Your Note</h2>
+                    <textarea defaultValue="Query your notes.." onChange={e => setSearchQuery(e.target.value)} value={searchQuery} className="text-lavender-grey-200 p-4 text-xl border-2 rounded-2xl bg-lavender-grey-900 w-180 h-40 shadow-md shadow-lavender-grey-400" />
+                    <IoMdSend className="text-4xl mx-4 my-4 absolute right-0 bottom-0 hover:text-lavender-grey-900" onClick={updateChat} />
+
+                </div>
+            </div> : <div className="flex rounded-2xl bg-lavender-grey-700 text-black text-2xl fixed bottom-0 left-1/3 w-1/2 mb-8 shadow-xl">
+                <textarea defaultValue="query chatbot" onChange={e => setSearchQuery(e.target.value)} value={searchQuery} className="w-full mx-2 focus:outline-none p-4 rounded-2xl field-sizing-content resize-none text-lavender-grey-200"></textarea>
+                <IoMdSend className="text-4xl mx-4 mt-6 hover:text-lavender-grey text-lavender-grey-200 hover:text-lavender-grey-900" onClick={updateChat} />
             </div>
+            }
         </div>
     )
 }

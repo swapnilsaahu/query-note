@@ -1,10 +1,12 @@
+import HeroSection from "../components/HeroSection";
+import HomeNavBar from "../components/HomeNavBar";
+
 const HomePage = () => {
     return (
-        <>
-            <h1 className="text-9xl font-bold">Hello!, this is home page</h1>
-            <img src="https://res.cloudinary.com/djluidppz/image/upload/v1765349562/xybdvqcmgrcwilbfz7jj.jpg" />
-            <img src="https://res.cloudinary.com/djluidppz/image/upload/v1765295161/krzxhxzecjumhothxqd6.jpg" />
-        </>
+        <div className="min-h-screen bg-lavender-grey-950 text-lavender-grey-100">
+            <HomeNavBar />
+            <HeroSection />
+        </div>
     )
 }
 

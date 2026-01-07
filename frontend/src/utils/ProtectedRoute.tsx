@@ -17,7 +17,7 @@ const ProtectedRoute = () => {
             <aside className="fixed left-0 top-0 h-screen">
                 <NavBar />
             </aside>
-            <main className="ml-64 overflow-y-auto">
+            <main className="ml-72 overflow-y-auto bg-lavender-grey-950 w-screen">
                 <Outlet />
             </main>
         </div>
