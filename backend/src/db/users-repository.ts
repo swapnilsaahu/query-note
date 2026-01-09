@@ -115,3 +115,15 @@ const getMaxAndMinValueNotesSequence = async () => {
     const result = await pool.query(query);
     return result;
 }
+
+export const insertMetaData = async (obj: any) => {
+    const query = {
+        text: 'INSERT INTO TABLE notes_metadata (user_id,subject) VALUES ($1,$2)',
+        values: [obj.user_id, obj.subject]
+    }
+    const result = await pool.query(query);
+    if (result.rowCount && result.rowCount > 0) {
+        console.log("meta inserted");
+        return true;
+    }
+}

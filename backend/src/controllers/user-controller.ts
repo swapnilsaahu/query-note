@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createUser, doesRefreshTokenExists, findByEmail, insertEmbAndContent, insertRefreshToken, semanticSearch } from "../db/users-repository";
+import { createUser, doesRefreshTokenExists, findByEmail, insertEmbAndContent, insertMetaData, insertRefreshToken, semanticSearch } from "../db/users-repository";
 import bcrypt from "bcrypt";
 import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import { v4 as uuidv4 } from 'uuid';
@@ -167,7 +167,12 @@ export const uploadNote = async (req: Request, res: Response) => {
             position: position
         }
 
+        const insertMetaDataForNav = {
+            user_id: userId,
+            subject: content[0].metaData.tags
+        }
         const insertEmbToDb = await insertEmbAndContent(insertObjForDB);
+        const insertMetaToDb = await insertMetaData(insertMetaDataForNav);
         if (insertEmbToDb) {
             await unlink(req.file.path);
             console.log("file deleted from server");

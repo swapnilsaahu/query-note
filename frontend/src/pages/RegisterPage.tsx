@@ -2,6 +2,7 @@ import api from "../lib/api";
 import { useState } from "react";
 import { Link } from "react-router";
 import useUserStore from "../store/UserStore";
+import { BeatLoader } from "react-spinners";
 
 const RegisterPage = () => {
     const [email, setEmail] = useState<string>("");
@@ -9,6 +10,7 @@ const RegisterPage = () => {
     const [username, setUsername] = useState("");
     const [signUpLoading, setSignUpLoading] = useState<boolean>(false);
     const [loginLoading, setLoginLoading] = useState<boolean>(false);
+    const [showError, setError] = useState(false);
     const addDetails = useUserStore(state => state.addDetials)
     const signUpHandle = async () => {
         try {
@@ -33,6 +35,7 @@ const RegisterPage = () => {
             }
 
         } catch (error) {
+            setError(true);
             console.error("error while signing up", error);
         } finally {
             setSignUpLoading(false);
@@ -60,11 +63,17 @@ const RegisterPage = () => {
                     <input type="password" name="password" placeholder="Password" className="bg-gray-200 border border-lavender-grey-600 rounded-lg p-2 w-full text-lavender-grey-900" onChange={(e) => setPassword(e.target.value)} />
 
                     <button className="text-lavender-grey-100 bg-lavender-grey-950 py-3 rounded-xl w-full hover:bg-lavender-grey-700" onClick={() => signUpHandle()}>
-                        {signUpLoading ? "loading" : "signUp"}
+                        {signUpLoading ? <BeatLoader /> : "Sign up"}
                     </button>
                     <p className="text-gray-500 text-center text-sm">
                         Already have an account? <Link to="/login" className="underline cursor-pointer">Sign in</Link>
                     </p>
+                    {showError ?
+                        <div className="flex bg-red-600 text-lavender-grey-100 p-4 justify-center rounded-xl">
+                            <p>Error while sign up</p>
+                        </div>
+                        : <div></div>
+                    }
                 </div>
             </div >
     );
