@@ -173,7 +173,7 @@ export const uploadNote = async (req: Request, res: Response) => {
         }
         const insertEmbToDb = await insertEmbAndContent(insertObjForDB);
         const insertMetaToDb = await insertMetaData(insertMetaDataForNav);
-        if (insertEmbToDb) {
+        if (insertMetaToDb) {
             await unlink(req.file.path);
             console.log("file deleted from server");
         }
@@ -183,8 +183,8 @@ export const uploadNote = async (req: Request, res: Response) => {
             msg: "image uploaded successfully"
         })
 
-    } catch (error) {
-        console.error("error while uploading");
+    } catch (err) {
+        console.error("error while uploading", err);
         return res.status(500).json({
             success: false,
             msg: "upload failed"

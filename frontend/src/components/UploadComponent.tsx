@@ -2,6 +2,7 @@ import api from "../lib/api";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import useUserStore from "../store/UserStore";
 import { FaFileAlt } from "react-icons/fa";
+import { FadeLoader } from "react-spinners";
 
 const UploadComponent = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -37,6 +38,8 @@ const UploadComponent = () => {
             }
         } catch (error) {
             console.error("error while uploading", error);
+        } finally {
+            setLoading(false);
         }
     }
     return (
@@ -46,7 +49,7 @@ const UploadComponent = () => {
                 <FaFileAlt className="text-2xl mt-1" />
                 <input type="file" onChange={handlePreview} className=" border-lavender-grey-900 hover:bg-lavender-grey-700" />
             </div>
-            {loading ? <div>loading..</div> : <input type="submit" onClick={handleSubmit} value="Upload" className="border-2 bg-lavender-grey-500 text-lavender-grey-950 py-4 px-10 text-xl rounded-4xl border-black p-2 hover:bg-lavender-grey-400" />}
+            {loading ? <div><FadeLoader color="#ffffff" className="mt-4" /></div> : <input type="submit" onClick={handleSubmit} value="Upload" className="border-2 bg-lavender-grey-500 text-lavender-grey-950 py-4 px-10 text-xl rounded-4xl border-black p-2 hover:bg-lavender-grey-400" />}
         </div>
     )
 }

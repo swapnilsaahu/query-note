@@ -50,17 +50,16 @@ const SearchBot = () => {
                     </div>
                 </div>)}
             </div>
-            {(chatHistory.length === 0) ? <div className="flex justify-center items-center text-lavender-grey-200">
+            {(chatHistory.length === 0) ? <div className="flex flex-col justify-center items-center text-lavender-grey-200">
                 <div className="flex flex-col relative items-center mr-4 sm:">
                     <h2 className="text-3xl sm:text-6xl font-bold m-2 sm:m-8 mb-4 sm:">Query Your Note</h2>
                     <textarea defaultValue="Query your notes.." onChange={e => setSearchQuery(e.target.value)} value={searchQuery} className="text-lavender-grey-200 p-4 sm:text-xl border-2 rounded-2xl bg-lavender-grey-900 sm:w-180 h-40 shadow-md shadow-lavender-grey-400" />
                     <IoMdSend className=" text-2xl sm:text-4xl mx-6 sm:mx-4 my-4 absolute right-0 bottom-0 hover:text-lavender-grey-900" onClick={updateChat} />
-                    {loading ? <FadeLoader className="mt-4" color="#ffffff" /> : <></>}
                     {showerror ? <div>ERROR</div> : <></>}
                 </div>
-
+                {loading ? <FadeLoader className="mt-4" color="#ffffff" /> : <></>}
             </div>
-                : <div className="flex rounded-2xl bg-lavender-grey-700 text-black sm:text-2xl fixed bottom-0  sm:left-1/4 sm:w-1/2 mb-8 shadow-xl">
+                : <div className="flex rounded-2xl bg-lavender-grey-700 text-black sm:text-2xl fixed bottom-0  sm:left-1/3 sm:w-1/2 mb-8 shadow-xl">
                     <textarea defaultValue="query chatbot" onChange={e => setSearchQuery(e.target.value)} value={searchQuery} className="w-full sm:mx-2 focus:outline-none p-4 rounded-2xl field-sizing-content resize-none text-lavender-grey-200"></textarea>
                     <IoMdSend className="text-4xl mx-4 mt-6 hover:text-lavender-grey text-lavender-grey-200 hover:text-lavender-grey-900" onClick={updateChat} />
                 </div>

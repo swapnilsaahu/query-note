@@ -5,11 +5,10 @@ A Fullstack solution where people can store their notes and use a RAG based syst
 ---
 ## High level Design
 
-### Architecture v1
+### Architecture
 - ![initial_design](./assets/core-rag-system.excalidraw.png)
-### DB design v1
-- ![db_design](./assets/db_design.png)
-added jwt token field in refresh_tokens table 
+### DB design
+- ![db_design](./assets/db_design2.png)
 
 ---
 

@@ -117,9 +117,11 @@ const getMaxAndMinValueNotesSequence = async () => {
 }
 
 export const insertMetaData = async (obj: any) => {
+    const { user_id, subject } = obj;
+    const subj_processed = subject.replace(/[\[\]\{\}\(\)",]/g, '').trim()
     const query = {
-        text: 'INSERT INTO TABLE notes_metadata (user_id,subject) VALUES ($1,$2)',
-        values: [obj.user_id, obj.subject]
+        text: 'INSERT INTO notes_metadata (user_id,subject) VALUES ($1,$2)',
+        values: [user_id, subj_processed]
     }
     const result = await pool.query(query);
     if (result.rowCount && result.rowCount > 0) {
